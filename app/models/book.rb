@@ -1,28 +1,14 @@
 # -*- encoding : utf-8 -*-
-class Bookshelf
-  require "open-uri"
-  require "iconv"
-  require "csv"
+class Book
+  attr_accessor :id,
+                :bookshelf_id,
+                :title,
+                :pages,
+                :publisher = ".*",
+                :isbn = ".*" 
 
-  Skoob_url           = "http://www.skoob.com.br"
-  Estante_lidos_path  = "/estante/livros/1/"
-  Book_bookshelf_path = "/estante/livro/"
-  Book_path           = "/livro/"
-  Book_edicoes_path   = Book_path + "edicoes/"
-  
-  def get(id, options = Hash.new)
-    books = get_titles_by_estante(id, options)
-    csv_string = CSV.generate do |csv|
-      csv << ["Title", "ISBN"]
-      books.each do |book|
-        csv << [book[:title], book[:isbn]]
-      end
-    end
-    p csv_string
-  end
-
-  def get_titles_by_estante(id, options = Hash.new)
-    estante_url = Skoob_url + Estante_lidos_path + id.to_s
+  def get_titles_by_estante(options = Hash.new)
+    estante_url = Skoob_url + Estante_lidos_path + @id.to_s
     page        = 1
     books       = []
 
@@ -33,17 +19,15 @@ class Bookshelf
       (parsed_estante/".clivro img.ccapa").each do |capa|
         book = Hash.new
         book[:title] = capa.get_attribute("title")
-        
+
         book_id = /amazonaws.com\/livros\/(\d+)/.match(capa.get_attribute("src"))[1]
         if book[:title].empty?
           book[:title] = get_title(book_id)
         end
         
-        book_bookshelf_id = /\/estante\/livro\/(\d+)/.match(capa.parent.get_attribute("href"))[1]
-        book[:publisher]  = get_publisher(book_bookshelf_id)
-        book[:pages]      = get_pages(book_bookshelf_id)
-        binding.pry
-        book[:isbn]       = get_isbn(book_id, book[:publisher], book[:pages])
+        book[:publisher] = get_publisher
+        book[:pages]     = get_pages
+        book[:isbn]      = get_isbn
 
         books << book
         break if options[:just_first_book]
@@ -65,21 +49,21 @@ class Bookshelf
 
   def get_pages(id)
     regex            = /(?<author>.*) - (?<pages>\d+) páginas - (?<publisher>.*)/
-    book_url         = Skoob_url + Book_bookshelf_path + id.to_s
+    book_url         = Skoob_url + Book_path + id.to_s
     parsed_book_page = parse(book_url)
     
-    autor_pages_publisher = (parsed_book_page/"#wd_referente span").first.inner_html
+    autor_pages_publisher = (parsed_book_page/"#wd_referente span").first
     /(?<author>.*) - (?<pages>\d+) páginas - (?<publisher>.*)/
     regex.match(autor_pages_publisher)[:pages]
   end
   
   def get_publisher(id)
     regex            = /(?<author>.*) - (?<pages>\d+) páginas - (?<publisher>.*)/
-    book_url         = Skoob_url + Book_bookshelf_path + id.to_s
+    book_url         = Skoob_url + Book_path + id.to_s
     parsed_book_page = parse(book_url)
     
-    autor_pages_publisher = (parsed_book_page/"#wd_referente span").first.inner_html
-   
+    autor_pages_publisher = (parsed_book_page/"#wd_referente span").first
+    binding.pry
     regex.match(autor_pages_publisher)[:publisher]
   end
 
