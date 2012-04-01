@@ -5,7 +5,7 @@ class BookshelfController < ApplicationController
   def show
     if params[:id]
       bookshelf = Bookshelf.new
-      bookshelf.get(params[:id])
+      render bookshelf.get(params[:id], {just_first_page: true})
     else
       render :nothing
     end

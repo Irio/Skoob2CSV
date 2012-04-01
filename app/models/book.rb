@@ -1,89 +1,68 @@
 # -*- encoding : utf-8 -*-
 class Book
-  attr_accessor :id,
-                :bookshelf_id,
-                :title,
-                :pages,
-                :publisher = ".*",
-                :isbn = ".*" 
+  attr_reader :id,
+              :bookshelf_id,
+              :title,
+              :isbn,
+              :author,
+              :publisher,
+              :pages,
+              :edition_id,
+              :edition
 
-  def get_titles_by_estante(options = Hash.new)
-    estante_url = Skoob_url + Estante_lidos_path + @id.to_s
-    page        = 1
-    books       = []
+  def initialize(bookshelf_id = "")
+    @bookshelf_id = bookshelf_id
 
-    while true do 
-      estante_url_with_page = estante_url + "/est:h/mpage:" + page.to_s
-      parsed_estante        = parse(estante_url_with_page)
+    read_bookshelf
+    read_edition
+  end 
+ 
+  private 
+  def read_bookshelf
+    if @bookshelf_id
+      url   = SkoobUrls.bookshelf_book(@bookshelf_id)
+      html  = Html.parse(url)
       
-      (parsed_estante/".clivro img.ccapa").each do |capa|
-        book = Hash.new
-        book[:title] = capa.get_attribute("title")
+      # Get id
+      regex     = /\/livro\/(\d+)/
+      book_node = (html/"#wd_referente").first
+      book_path = (book_node/"a")[0].get_attribute("href")
+      @id       = regex.match(book_path)[1]
+      
+      # Get title
+      @title = (html/"a.l20b").inner_html
 
-        book_id = /amazonaws.com\/livros\/(\d+)/.match(capa.get_attribute("src"))[1]
-        if book[:title].empty?
-          book[:title] = get_title(book_id)
-        end
-        
-        book[:publisher] = get_publisher
-        book[:pages]     = get_pages
-        book[:isbn]      = get_isbn
+      # Get author, pages and publisher
+      regex = /(?<author>.*) - (?<pages>\d+) páginas - (?<publisher>.*)/
+      autor_pages_publisher = (html/"#wd_referente span").first.inner_html
+      autor_pages_publisher = regex.match(autor_pages_publisher)
+      @author    = autor_pages_publisher[:author]
+      @pages     = autor_pages_publisher[:pages]
+      @publisher = autor_pages_publisher[:publisher]
 
-        books << book
-        break if options[:just_first_book]
-      end
-      page += 1
-
-      break if options[:just_first_book] or options[:just_first_page]
-      break if (parsed_estante/".clivro img.ccapa").empty?
+      # Get edition_id
+      regex = Regexp.new("icones#{@id}(\\d+)")
+      string_with_book_edition_id = (html/"[@id*=icones]").first.get_attribute("id")
+      @edition_id = regex.match(string_with_book_edition_id)[1]
     end
-
-    books
-  end
-
-  def get_title(id)
-    book_url         = Skoob_url + Book_path + id.to_s
-    parsed_book_page = parse(book_url)
-    (parsed_book_page/"#barra_titulo h1").inner_html
-  end
-
-  def get_pages(id)
-    regex            = /(?<author>.*) - (?<pages>\d+) páginas - (?<publisher>.*)/
-    book_url         = Skoob_url + Book_path + id.to_s
-    parsed_book_page = parse(book_url)
-    
-    autor_pages_publisher = (parsed_book_page/"#wd_referente span").first
-    /(?<author>.*) - (?<pages>\d+) páginas - (?<publisher>.*)/
-    regex.match(autor_pages_publisher)[:pages]
   end
   
-  def get_publisher(id)
-    regex            = /(?<author>.*) - (?<pages>\d+) páginas - (?<publisher>.*)/
-    book_url         = Skoob_url + Book_path + id.to_s
-    parsed_book_page = parse(book_url)
-    
-    autor_pages_publisher = (parsed_book_page/"#wd_referente span").first
-    binding.pry
-    regex.match(autor_pages_publisher)[:publisher]
-  end
-
-  def get_isbn(id, publisher = ".*", pages = ".*")
-    book_edicoes_url = Skoob_url + Book_edicoes_path + id.to_s
-    parsed_book_page = parse(book_edicoes_url)
-    
-    regex_estante_book = /Editora:<\/span> #{publisher}.+Páginas:<\/span> #{pages}/
-    
-    (parsed_book_page/"#corpo > div > div > div").each do |book_node|
-      book_node_html = book_node.inner_html
-      if regex_estante_book.match(book_node_html)
-        return (/ISBN:<\/span> (\w+)/.match(book_node_html)[1])
+  def read_edition
+    if @id
+      url   = SkoobUrls.book_editions(@id)
+      html  = Html.parse(url)
+     
+      book_edition_path = SkoobUrls.book_edition(@edition_id, true)
+      (html/"#corpo > div > div > div").each do |book_node| 
+        book_data = book_node.search("span")
+        regex = Regexp.new(@publisher)
+        if regex.match(book_data[1].next.inner_text) and
+           book_data[4].next.inner_text == " " + @pages
+        
+          @edition  = book_data[0].next.inner_text[1..-1]
+          @isbn     = book_data[2].next.inner_text[1..-1]
+        end
       end
     end
-  end
-
-  private
-  def parse(url)
-    page = Iconv.new('UTF-8//IGNORE', 'UTF-8').conv(open(url).readlines.join("\n"))
-    Hpricot(page)
   end
 end
