@@ -1,13 +1,10 @@
 == How to use
-<tt>$ bundle update</tt>
-<tt>$ unicorn -p 3000</tt>
+  $ bundle update
+  $ unicorn -p 3000
 
-Get your id on Skoob.
-<tt>http://www.skoob.com.br/usuario/\<your_skoob_id\></tt>
-
-On Browser:
-<tt>http://127.0.0.1:3000/\<your_skoob_id\></tt>
+  http://www.skoob.com.br/usuario/<your_skoob_id>
+  http://127.0.0.1:3000/<your_skoob_id>
 
 For instance:
-<tt>http://www.skoob.com.br/usuario/10258</tt>
-<tt>http://127.0.0.1:3000/10258</tt>
+  http://www.skoob.com.br/usuario/10258
+  http://127.0.0.1:3000/10258
