@@ -10,7 +10,7 @@ class BookshelfController < ApplicationController
         return false
       end
       bookshelf = Bookshelf.new
-      render inline: bookshelf.get(params[:id], {just_first_book: true})
+      render inline: bookshelf.get(params[:id])
     else
       render :nothing
     end
