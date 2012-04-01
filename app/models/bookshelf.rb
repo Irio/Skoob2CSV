@@ -5,17 +5,17 @@ class Bookshelf
   def get(id, options = Hash.new)
     books = bookshelf(id, options)
     csv_string = CSV.generate do |csv|
-      csv << ["Title", "ISBN"]
+      csv << ["Title", "Author", "ISBN", "Publisher", "Bookshelves"]
       books.each do |book|
-        csv << [book.title, book.isbn]
+        csv << [book.title, book.author, book.isbn, book.publisher, "read"]
+        p book
       end
     end
-    p csv_string
   end
 
   def bookshelf(id, options = Hash.new)
-    page        = 1
-    books       = []
+    page  = 1
+    books = []
 
     while true do 
       url  = SkoobUrls.bookshelf_read(id, page)

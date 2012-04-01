@@ -4,8 +4,13 @@ class BookshelfController < ApplicationController
 
   def show
     if params[:id]
+      binding.pry
+      unless params[:format] == "csv"
+        redirect_to controller: "bookshelf", action: "show", format: "csv"
+        return false
+      end
       bookshelf = Bookshelf.new
-      render bookshelf.get(params[:id], {just_first_page: true})
+      render inline: bookshelf.get(params[:id], {just_first_book: true})
     else
       render :nothing
     end
