@@ -8,7 +8,9 @@ class BookshelfController < ApplicationController
         redirect_to controller: "bookshelf", action: "show", format: "csv"
         return false
       end
-      bookshelf = Bookshelf.new(params[:id], :just_first_book)
+      bookshelf = Bookshelf.new(params[:id])
+      
+      response.headers["Content-Type"] = 'text/csv'
       render text: bookshelf.to_csv
     else
       render :nothing
