@@ -9,7 +9,7 @@ class BookshelfController < ApplicationController
         return false
       end
       bookshelf = Bookshelf.new(params[:id], :just_first_book)
-      render inline: bookshelf.to_csv
+      render text: bookshelf.to_csv
     else
       render :nothing
     end
