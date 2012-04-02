@@ -12,9 +12,9 @@ class Book
 
   def initialize(bookshelf_id = "")
     @bookshelf_id = bookshelf_id
-
     read_bookshelf
     read_edition
+    self
   end 
  
   private 
@@ -57,7 +57,7 @@ class Book
         book_data = book_node.search("span")
         regex = Regexp.new(@publisher)
         if regex.match(book_data[1].next.inner_text) and
-           book_data[4].next.inner_text == " " + @pages
+           book_data[4].next.inner_text == (" " + @pages)
         
           @edition  = book_data[0].next.inner_text[1..-1]
           @isbn     = book_data[2].next.inner_text[1..-1]
