@@ -51,7 +51,7 @@ class Bookshelf
       page += 1
 
       break if @options.include?(:just_first_book) or @options.include?(:just_first_page)
-      break if (parsed_estante/".clivro img.ccapa").empty?
+      break if (html/".clivro img.ccapa").empty?
     end
     books
   end
