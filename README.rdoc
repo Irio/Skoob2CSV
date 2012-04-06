@@ -10,3 +10,4 @@ For instance:
   http://127.0.0.1:3000/10258
 
 And wait. 270 books ≈ 20min
+You can see status on console.
