@@ -45,7 +45,6 @@ class Bookshelf
         
         book_bookshelf_id = book_node.get_attribute("id")
         books << Book.new(book_bookshelf_id)
-        puts "Skoob :: read_bookshelf(#{@user_id}) :: page=#{page} book=#{@books.length + books.length}"
         yield books.length if block_given?
 
         break if @options.include?(:just_first_book)
