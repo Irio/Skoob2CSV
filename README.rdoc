@@ -1,9 +1,9 @@
 == How to use
   $ bundle update
-  $ unicorn -p 3000
+  $ rails s
 
-  http://www.skoob.com.br/usuario/<your_skoob_id>
-  http://127.0.0.1:3000/<your_skoob_id>
+  http://www.skoob.com.br/usuario/[your_skoob_id]
+  http://127.0.0.1:3000/[your_skoob_id]
 
 For instance:
   http://www.skoob.com.br/usuario/10258
