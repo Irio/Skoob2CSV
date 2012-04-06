@@ -9,5 +9,5 @@ For instance:
   http://www.skoob.com.br/usuario/10258
   http://127.0.0.1:3000/10258
 
-And wait. 270 books ≈ 20min
+And wait. 270 books ≈ 18min
 You can see status on console.
