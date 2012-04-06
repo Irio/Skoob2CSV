@@ -1,6 +1,5 @@
 Skoob2CSV::Application.routes.draw do
-  get '/:id' => 'bookshelf#show'
-  get 'index' => 'bookshelf#index'
+  get '/estante(/:id)' => 'bookshelf#show', as: "show_bookshelf"
 
   root :to => 'bookshelf#index'
 end

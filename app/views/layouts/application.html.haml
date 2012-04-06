@@ -6,4 +6,8 @@
     =javascript_include_tag "application"
     =csrf_meta_tags
   %body
-    =yield
+    #page
+      %header
+        %h1 Exporte dados do seu Skoob
+        =link_to "www.skoob.com.br"
+      =yield

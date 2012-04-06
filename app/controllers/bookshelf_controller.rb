@@ -9,6 +9,10 @@ class BookshelfController < ApplicationController
         return false
       end
       bookshelf = Bookshelf.new(params[:id])
+
+      bookshelf.fetch do |books_count|
+        puts "=#{books_count}"
+      end
       
       response.headers["Content-Type"] = 'text/csv'
       render text: bookshelf.to_csv
