@@ -1,3 +1,9 @@
+Returns from read bookshelf:
+* Title
+* Author
+* ISBN
+* Publisher
+
 == How to use
   $ bundle update
   $ rails s
