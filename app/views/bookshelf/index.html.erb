@@ -1,0 +1,16 @@
+<fieldset class="form">
+  <div class="alert alert-info" role="alert">
+    Obtenha seu ID de usuário na url do seu perfil no Skoob (ex.: https://www.skoob.com.br/usuario/<i>XXXXXX</i>-john)
+  </div>
+
+  <p>
+    <%= form_tag create_bookshelf_csv_index_path, method: :post do -%>
+      <div class="form-group">
+        <label for="id">ID do usuário</label>
+        <%= text_field_tag 'id', nil, class: 'form-control' %>
+      </div>
+
+      <%= submit_tag 'Gerar CSV', class: 'btn btn-default' %>
+    <% end %>
+  </p>
+</fieldset>

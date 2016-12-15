@@ -1,5 +1,7 @@
-Skoob2CSV::Application.routes.draw do
-  get '/:id' => 'bookshelf#show', as: "show_bookshelf"
+Rails.application.routes.draw do
+  # post '/:id', to: 'bookshelf#create', as: 'create_bookshelf_csv', defaults: { format: 'csv' }
 
-  root :to => 'bookshelf#index'
+  resources :bookshelf, only: :create, as: 'create_bookshelf_csv', format: 'csv'
+
+  root to: 'bookshelf#index'
 end
